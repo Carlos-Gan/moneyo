@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:moneyo/extras/app_colors.dart';
+import 'package:moneyo/panels/home_cards.dart';
 import 'package:moneyo/widgets/cuentas.dart';
 
 class Home extends StatelessWidget {
@@ -80,13 +81,18 @@ class Home extends StatelessWidget {
                       color: AppColors.lightTertiary,
                     ),
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomeCards()),
+                        );
+                      },
                       icon: FaIcon(FontAwesomeIcons.creditCard),
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Tarjetas',
+                    'Cuentas',
                     style: TextStyle(fontSize: 12, color: AppColors.lightText),
                   ),
                 ],

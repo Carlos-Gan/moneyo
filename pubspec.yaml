@@ -10,6 +10,16 @@ dependencies:
   flutter:
     sdk: flutter
   font_awesome_flutter: ^10.10.0
+  intl: ^0.20.2
+  mask_text_input_formatter: ^2.9.0
+  bottom_picker: ^4.1.1
+  flutter_localization: ^0.3.3
+  flutter_localizations:
+    sdk: flutter
+  flutter_icon_snackbar: ^1.2.1
+  flex_color_picker: ^3.7.1
+  sqflite: ^2.4.2
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -18,3 +28,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logos/amex.png
+    - assets/logos/discover.png
+    - assets/logos/mastercard.png
+    - assets/logos/visa.png
+    - assets/logos/carnet.png
