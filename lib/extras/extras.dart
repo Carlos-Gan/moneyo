@@ -173,3 +173,8 @@ class CurrencyInputFormatter extends TextInputFormatter {
     );
   }
 }
+
+//Agregar tipos de cuentas aqui
+class AccountTypes {
+  static final List<String> tipos = ['Ahorro', 'Efectivo', 'Cripto'];
+}

@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print, deprecated_member_use
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
+import 'package:moneyo/bd/cuentas.dart';
 import 'package:moneyo/bd/tarjetas.dart';
 import 'package:moneyo/extras/app_colors.dart';
 import 'package:moneyo/extras/extras.dart';
@@ -26,7 +29,6 @@ class _AddAccountsState extends State<AddAccounts> {
   // Variables dentro de _AddAccountsState
   Color accountColor = Colors.green; // Color por defecto
   String selectedType = 'Ahorro'; // Tipo de cuenta por defecto
-  final List<String> accountTypes = ['Ahorro', 'Efectivo', 'Cripto'];
   final TextEditingController nameControllerCuenta = TextEditingController();
   final TextEditingController balanceControllerCuenta = TextEditingController();
 
@@ -57,6 +59,13 @@ class _AddAccountsState extends State<AddAccounts> {
     final ultimos4 = numero.substring(numero.length - 4);
     final ocultos = '*' * (numero.length - 4);
     return '$ocultos$ultimos4';
+  }
+
+  double parseSaldo(String value) {
+    // Quitar comas y espacios
+    final cleaned = value.replaceAll(',', '').trim();
+    // Intentar convertir
+    return double.tryParse(cleaned) ?? 0.0;
   }
 
   @override
@@ -100,7 +109,7 @@ class _AddAccountsState extends State<AddAccounts> {
                             ),
                           ),
                           const SizedBox(height: 20),
-              
+
                           // Número de tarjeta
                           TextField(
                             controller: cardNumberController,
@@ -113,7 +122,9 @@ class _AddAccountsState extends State<AddAccounts> {
                                 valueListenable: cardNumberController,
                                 builder: (context, value, child) {
                                   final cardNumber = cardNumberController.text;
-                                  if (cardNumber.isEmpty) return const SizedBox();
+                                  if (cardNumber.isEmpty) {
+                                    return const SizedBox();
+                                  }
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 10.0,
@@ -126,7 +137,7 @@ class _AddAccountsState extends State<AddAccounts> {
                             ),
                           ),
                           const SizedBox(height: 20),
-              
+
                           // Fecha de vencimiento
                           TextField(
                             controller: expiryController,
@@ -146,7 +157,7 @@ class _AddAccountsState extends State<AddAccounts> {
                                   setState(() {
                                     selectedMonth = month ?? selectedMonth;
                                     selectedYear = year ?? selectedYear;
-              
+
                                     // Actualiza el TextField con formato MM/AA
                                     final monthStr = selectedMonth
                                         .toString()
@@ -154,14 +165,15 @@ class _AddAccountsState extends State<AddAccounts> {
                                     final yearStr = (selectedYear % 100)
                                         .toString()
                                         .padLeft(2, '0');
-                                    expiryController.text = '$monthStr/$yearStr';
+                                    expiryController.text =
+                                        '$monthStr/$yearStr';
                                   });
                                 },
                               );
                             },
                           ),
                           const SizedBox(height: 20),
-              
+
                           // Saldo
                           TextField(
                             controller: balanceController,
@@ -200,7 +212,7 @@ class _AddAccountsState extends State<AddAccounts> {
                               },
                             ),
                           ),
-              
+
                           SizedBox(height: 20),
                           // Tipo de tarjeta
                           Row(
@@ -224,6 +236,7 @@ class _AddAccountsState extends State<AddAccounts> {
                           const SizedBox(height: 10),
                           // Campos adicionales para tarjetas de crédito
                           if (isCreditCard) ...[
+                            //Fecha corte
                             TextField(
                               keyboardType: TextInputType.number,
                               readOnly: true,
@@ -242,8 +255,9 @@ class _AddAccountsState extends State<AddAccounts> {
                                     setState(() {
                                       selectedMonthCorte =
                                           month ?? selectedMonthCorte;
-                                      selectedDayCorte = day ?? selectedDayCorte;
-              
+                                      selectedDayCorte =
+                                          day ?? selectedDayCorte;
+
                                       // Actualiza el TextField con formato MM/AA
                                       final dayStr = selectedDayCorte
                                           .toString()
@@ -259,6 +273,7 @@ class _AddAccountsState extends State<AddAccounts> {
                               },
                             ),
                             const SizedBox(height: 20),
+                            //Limite de pago
                             TextField(
                               keyboardType: TextInputType.number,
                               readOnly: true,
@@ -279,7 +294,7 @@ class _AddAccountsState extends State<AddAccounts> {
                                           month ?? selectedMonthLimite;
                                       selectedDayLimite =
                                           day ?? selectedDayLimite;
-              
+
                                       // Actualiza el TextField con formato MM/AA
                                       final dayStr = selectedDayLimite
                                           .toString()
@@ -299,6 +314,7 @@ class _AddAccountsState extends State<AddAccounts> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    //Guardar tarjetas boton
                     ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(
@@ -322,7 +338,7 @@ class _AddAccountsState extends State<AddAccounts> {
                                 (limiteEditingController.text.isEmpty ||
                                     corteEditingController.text.isEmpty))) {
                           String mensaje = "";
-              
+
                           if (bankController.text.isEmpty) {
                             mensaje = "Ingrese el nombre del banco";
                           } else if (cardNumberController.text.isEmpty) {
@@ -336,7 +352,7 @@ class _AddAccountsState extends State<AddAccounts> {
                               corteEditingController.text.isEmpty) {
                             mensaje = "Ingrese la fecha de corte";
                           }
-              
+
                           IconSnackBar.show(
                             context,
                             label: mensaje,
@@ -344,13 +360,13 @@ class _AddAccountsState extends State<AddAccounts> {
                           );
                           return; // Salir si falta algún dato
                         }
-              
+
                         // Crear objeto tarjeta según tipo
                         final tarjeta = Tarjeta(
                           nombre: bankController.text,
                           numeroTarjeta: cardNumberController.text,
                           fechaVencimiento: expiryController.text,
-                          saldo: double.tryParse(balanceController.text) ?? 0.00,
+                          saldo: parseSaldo(balanceController.text),
                           esCredito: isCreditCard,
                           colorFondo: tarjetaColor.value32bit,
                           fechaCorte: isCreditCard
@@ -360,14 +376,14 @@ class _AddAccountsState extends State<AddAccounts> {
                               ? limiteEditingController.text
                               : null,
                         );
-              
+
                         // Guardar en la base de datos según tipo
                         if (isCreditCard) {
                           OperacionesBD.guardarTarjetaCredito(tarjeta);
                         } else {
                           print("Tarjeta guardada");
                           print(
-                            "${tarjeta.nombre},${ocultarTarjeta(tarjeta.numeroTarjeta)},${tarjeta.fechaVencimiento},${tarjeta.saldo}",
+                            "${tarjeta.nombre},${ocultarTarjeta(tarjeta.numeroTarjeta)}, ${tarjeta.fechaVencimiento}, ${tarjeta.saldo}",
                           );
                           OperacionesBD.guardarTarjetaDebito(tarjeta);
                           IconSnackBar.show(
@@ -376,12 +392,12 @@ class _AddAccountsState extends State<AddAccounts> {
                             snackBarType: SnackBarType.success,
                           );
                         }
-              
+
                         Navigator.pop(
                           context,
                         ); // Cerrar el diálogo después de guardar
                       },
-              
+
                       child: Text('Agregar Tarjeta'),
                     ),
                   ],
@@ -396,9 +412,18 @@ class _AddAccountsState extends State<AddAccounts> {
                     // Nombre de la cuenta
                     TextField(
                       controller: nameControllerCuenta,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         labelText: 'Nombre de la cuenta',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.lightText,
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -408,17 +433,27 @@ class _AddAccountsState extends State<AddAccounts> {
                       controller: balanceControllerCuenta,
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter()],
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         labelText: 'Saldo inicial',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.lightText,
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Tipo de cuenta
                     DropdownButtonFormField<String>(
-                      value: selectedType,
-                      items: accountTypes
+                      dropdownColor: Theme.of(context).colorScheme.onTertiary,
+                      initialValue: selectedType,
+                      items: AccountTypes.tipos
                           .map(
                             (type) => DropdownMenuItem(
                               value: type,
@@ -431,9 +466,18 @@ class _AddAccountsState extends State<AddAccounts> {
                           selectedType = value!;
                         });
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         labelText: 'Tipo de cuenta',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.lightText,
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),

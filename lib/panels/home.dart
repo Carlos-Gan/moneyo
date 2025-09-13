@@ -1,24 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:moneyo/bd/cuentas.dart';
+import 'package:moneyo/bd/operaciones_bd.dart';
+import 'package:moneyo/bd/tarjetas.dart';
 import 'package:moneyo/extras/app_colors.dart';
 import 'package:moneyo/panels/home_cards.dart';
 import 'package:moneyo/widgets/cuentas.dart';
+import 'package:moneyo/widgets/tarjeta_card.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
-  final List<Map<String, dynamic>> cuentas = const [
-    {'nombre': 'Nu Debito', 'numeroCuenta': '7890', 'saldo': 1500.75},
-    {'nombre': 'Santander Debito', 'numeroCuenta': '4321', 'saldo': 250.00},
-    {'nombre': 'BBVA Debito', 'numeroCuenta': '4455', 'saldo': 0.00},
-    {'nombre': 'Banorte Debito', 'numeroCuenta': '1234', 'saldo': 3200.50},
-    {'nombre': 'HSBC Debito', 'numeroCuenta': '5678', 'saldo': 780.20},
-    {'nombre': 'Citibanamex Debito', 'numeroCuenta': '9101', 'saldo': 450.00},
-    {'nombre': 'Inbursa Debito', 'numeroCuenta': '1122', 'saldo': 600.00},
-    {'nombre': 'Scotiabank Debito', 'numeroCuenta': '3344', 'saldo': 1200.00},
-    {'nombre': 'BanCoppel Debito', 'numeroCuenta': '5566', 'saldo': 300.00},
-    {'nombre': 'Banco Azteca Debito', 'numeroCuenta': '7788', 'saldo': 950.00},
-  ];
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  //Listas
+  List<Cuenta> listaCuentas = [];
+  List<Tarjeta> listaTarjetas = [];
+
+  Future<void> cargarDatos() async {
+    final cuentas = await OperacionesBD.obtenerCuentas();
+    final tarjetas = await OperacionesBD.obtenerTarjetas();
+    setState(() {
+      listaCuentas = cuentas;
+      listaTarjetas = tarjetas;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cargarDatos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,19 +176,44 @@ class Home extends StatelessWidget {
           ],
         ),
         Expanded(
-          child: ListView.separated(
-            physics: ScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: cuentas.length,
-            separatorBuilder: (context, index) => SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final cuenta = cuentas[index];
-              return Cuentas(
-                nombre: cuenta['nombre'],
-                numeroCuenta: cuenta['numeroCuenta'],
-                saldo: cuenta['saldo'],
-              );
-            },
+          child: RefreshIndicator(
+            onRefresh: cargarDatos,
+            child: ListView(
+              children: [
+                //Tarjetas
+                ...listaTarjetas.map(
+                  (tarjeta) => Padding(
+                    padding: EdgeInsetsGeometry.symmetric(vertical: 5),
+                    child: TarjetasVisual(
+                      tarjetaColor: Color(tarjeta.colorFondo),
+                      numeroTarjeta: tarjeta.numeroTarjeta,
+                      bancoNombre: tarjeta.nombre,
+                      saldo: tarjeta.saldo,
+                      fechaVencimiento: tarjeta.fechaVencimiento,
+                      isCredito: tarjeta.esCredito,
+                      fechaCorte: tarjeta.esCredito
+                          ? (tarjeta.fechaCorte ?? '')
+                          : '',
+                      fechaLimitePago: tarjeta.esCredito
+                          ? (tarjeta.fechaLimite ?? '')
+                          : '',
+                    ),
+                  ),
+                ),
+                //Cuentas
+                ...listaCuentas.map(
+                  (cuenta) => Padding(
+                    padding: EdgeInsetsGeometry.symmetric(vertical: 5),
+                    child: Cuentas(
+                      nombre: cuenta.nombre,
+                      tipo: cuenta.tipo,
+                      saldo: cuenta.saldo,
+                      color: Color(cuenta.color),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         SizedBox(height: 10),

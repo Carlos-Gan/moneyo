@@ -3,18 +3,27 @@ import 'package:moneyo/extras/app_colors.dart';
 
 class Cuentas extends StatelessWidget {
   final String nombre;
-  final String numeroCuenta;
+  final String tipo;
   final double saldo;
-  const Cuentas({super.key, required this.nombre, required this.numeroCuenta, required this.saldo});
+  final Color color;
+  const Cuentas({
+    super.key,
+    required this.nombre,
+    required this.tipo,
+    required this.saldo,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: 90,
+      width: 250,
+      height: 100,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: AppColors.lightQuaternary,
+        color: color,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -26,10 +35,10 @@ class Cuentas extends StatelessWidget {
               children: [
                 Text(
                   nombre,
-                  style: TextStyle(fontSize: 16, color: AppColors.lightText),
+                  style: TextStyle(fontSize: 16, color: AppColors.lightText, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),
-                Text('· $numeroCuenta', style: TextStyle(fontSize: 18)),
+                Text('· $tipo', style: TextStyle(fontSize: 18)),
               ],
             ),
             Spacer(),
@@ -37,11 +46,14 @@ class Cuentas extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('\$ ${saldo.toStringAsFixed(2)}', style: TextStyle(fontSize: 18)),
+                Text('Saldo Disponible', style: TextStyle(fontSize: 12)),
                 SizedBox(height: 10),
-                Text('Saldo Disponible', style: TextStyle(fontSize: 18)),
+                Text(
+                  '\$ ${saldo.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

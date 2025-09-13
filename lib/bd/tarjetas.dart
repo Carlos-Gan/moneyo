@@ -1,4 +1,5 @@
 class Tarjeta {
+  int? id;
   final String nombre;
   final String numeroTarjeta;
   final String? fechaCorte;
@@ -9,6 +10,7 @@ class Tarjeta {
   final int colorFondo;
 
   Tarjeta({
+    this.id,
     required this.nombre,
     required this.numeroTarjeta,
     this.fechaCorte,
@@ -20,6 +22,7 @@ class Tarjeta {
   });
 
   factory Tarjeta.fromMap(Map<String, dynamic> json) => Tarjeta(
+    id: json['id'],
     nombre: json['nombre'],
     numeroTarjeta: json['numero'],
     fechaVencimiento: json['fechaVencimiento'],
@@ -29,25 +32,16 @@ class Tarjeta {
     fechaCorte: json['fechaCorte'],
     fechaLimite: json['fechaLimite'],
   );
-}
 
-class Cuenta {
-  final String nombre;
-  final double saldo;
-  final String tipo;
-  final int color;
-
-  Cuenta({
-    required this.nombre,
-    required this.saldo,
-    required this.tipo,
-    required this.color,
-  });
-
-  factory Cuenta.fromMap(Map<String, dynamic> json) => Cuenta(
-    nombre: json['nombre'],
-    saldo: json['saldo'],
-    tipo: json['tipo'],
-    color: json['color'],
-  );
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'nombre': nombre,
+    'numero': numeroTarjeta,
+    'fechaVencimiento': fechaVencimiento,
+    'saldo': saldo,
+    'esCredito': esCredito ? 1 : 0,
+    'color': colorFondo,
+    'fechaCorte': fechaCorte,
+    'fechaLimite': fechaLimite,
+  };
 }

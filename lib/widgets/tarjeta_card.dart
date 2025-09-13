@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyo/extras/app_colors.dart';
 import 'package:moneyo/extras/extras.dart';
 
 class TarjetasVisual extends StatelessWidget {
@@ -35,17 +34,8 @@ class TarjetasVisual extends StatelessWidget {
       margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: tarjetaColor,
-        border: Border.all(color: AppColors.lightBorder),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: tarjetaColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
