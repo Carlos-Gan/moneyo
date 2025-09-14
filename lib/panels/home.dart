@@ -209,6 +209,7 @@ class _HomeState extends State<Home> {
                       tipo: cuenta.tipo,
                       saldo: cuenta.saldo,
                       color: Color(cuenta.color),
+                      width: double.infinity-50,
                     ),
                   ),
                 ),

@@ -137,28 +137,30 @@ class _EditCardsState extends State<EditCards> {
             ),
             SizedBox(height: 20),
             //Numero de la tarjeta
-            TextField(
-              controller: cardNumberController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [CardNumberFormatter()],
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Número de Tarjeta',
-                prefixIcon: ValueListenableBuilder(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ValueListenableBuilder(
                   valueListenable: cardNumberController,
                   builder: (context, value, child) {
-                    final cardNumber = cardNumberController.text;
-                    if (cardNumber.isEmpty) return const SizedBox();
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        vertical: 10.0,
+                      padding: EdgeInsetsGeometry.only(bottom: 8),
+                      child: CardUtils.getCardLogoRow(
+                        cardNumberController.text,
                       ),
-                      child: CardUtils.getCardLogo(cardNumber),
                     );
                   },
                 ),
-              ),
+                TextField(
+                  controller: cardNumberController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [CardNumberFormatter()],
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'Número de Tarjeta',
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             //Fecha de Vencimiento
@@ -380,7 +382,10 @@ class _EditCardsState extends State<EditCards> {
                   snackBarType: SnackBarType.success,
                 );
 
-                Navigator.pop(context, true); // Cerrar el diálogo después de guardar
+                Navigator.pop(
+                  context,
+                  true,
+                ); // Cerrar el diálogo después de guardar
               },
 
               child: Text('Modificar Tarjeta'),

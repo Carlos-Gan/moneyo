@@ -130,7 +130,7 @@ class _AddAccountsState extends State<AddAccounts> {
                                       horizontal: 10.0,
                                       vertical: 10.0,
                                     ),
-                                    child: CardUtils.getCardLogo(cardNumber),
+                                    child: CardUtils.getCardLogoRow(cardNumber),
                                   );
                                 },
                               ),

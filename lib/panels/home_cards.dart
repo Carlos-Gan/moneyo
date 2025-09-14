@@ -56,7 +56,7 @@ class _HomeCardsState extends State<HomeCards> {
                 MaterialPageRoute(builder: (context) => const AddAccounts()),
               );
               if (result == true) {
-                cargarTarjetas(); // refrescar al volver
+                setState(() {}); // refresca el FutureBuilder
               }
             },
             icon: const FaIcon(FontAwesomeIcons.plus),
@@ -64,10 +64,13 @@ class _HomeCardsState extends State<HomeCards> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: cargarTarjetas,
-        child: Padding(
+        onRefresh: () async {
+          setState(() {}); // refresca FutureBuilder
+        },
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Tarjetas Disponibles',
@@ -76,101 +79,99 @@ class _HomeCardsState extends State<HomeCards> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 150,
-                child: listaTarjetas.isEmpty
-                    ? const Center(child: Text('No hay tarjetas disponibles'))
-                    : (listaTarjetas.length > 3
-                          ? PageView.builder(
-                              scrollDirection: Axis.horizontal,
-                              controller: PageController(viewportFraction: 0.8),
-                              itemCount: listaTarjetas.length,
-                              itemBuilder: (context, index) {
-                                final tarjeta = listaTarjetas[index];
-                                return GestureDetector(
-                                  onTap: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetalleTarjetasScreen(
-                                              tarjeta: tarjeta,
-                                            ),
-                                      ),
-                                    );
-                                    if (result == true) {
-                                      cargarTarjetas();
-                                    }
-                                  },
-                                  child: TarjetasVisual(
-                                    tarjetaColor: Color(tarjeta.colorFondo),
-                                    numeroTarjeta: tarjeta.numeroTarjeta,
-                                    bancoNombre: tarjeta.nombre,
-                                    saldo: tarjeta.saldo,
-                                    fechaVencimiento: tarjeta.fechaVencimiento,
-                                    isCredito: tarjeta.esCredito,
-                                    fechaCorte: tarjeta.esCredito
-                                        ? (tarjeta.fechaCorte ?? '')
-                                        : '',
-                                    fechaLimitePago: tarjeta.esCredito
-                                        ? (tarjeta.fechaLimite ?? '')
-                                        : '',
-                                  ),
-                                );
-                              },
-                            )
-                          : SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: listaTarjetas
-                                    .map(
-                                      (tarjeta) => GestureDetector(
-                                        onTap: () async {
-                                          final result = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetalleTarjetasScreen(
-                                                    tarjeta: tarjeta,
-                                                  ),
-                                            ),
-                                          );
-                                          if (result == true) {
-                                            cargarTarjetas();
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0,
-                                          ),
-                                          child: TarjetasVisual(
-                                            tarjetaColor: Color(
-                                              tarjeta.colorFondo,
-                                            ),
-                                            numeroTarjeta:
-                                                tarjeta.numeroTarjeta,
-                                            bancoNombre: tarjeta.nombre,
-                                            saldo: tarjeta.saldo,
-                                            fechaVencimiento:
-                                                tarjeta.fechaVencimiento,
-                                            isCredito: tarjeta.esCredito,
-                                            fechaCorte: tarjeta.esCredito
-                                                ? (tarjeta.fechaCorte ?? '')
-                                                : '',
-                                            fechaLimitePago: tarjeta.esCredito
-                                                ? (tarjeta.fechaLimite ?? '')
-                                                : '',
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                child: FutureBuilder<List<Tarjeta>>(
+                  future: OperacionesBD.obtenerTarjetas(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final tarjetas = snapshot.data!;
+                    if (tarjetas.isEmpty) {
+                      return const Center(
+                        child: Text('No hay tarjetas disponibles'),
+                      );
+                    }
+                    if (tarjetas.length > 3) {
+                      return PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        controller: PageController(viewportFraction: 0.8),
+                        itemCount: tarjetas.length,
+                        itemBuilder: (context, index) {
+                          final tarjeta = tarjetas[index];
+                          return GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetalleTarjetasScreen(tarjeta: tarjeta),
+                                ),
+                              );
+                              if (result == true) setState(() {});
+                            },
+                            child: TarjetasVisual(
+                              tarjetaColor: Color(tarjeta.colorFondo),
+                              numeroTarjeta: tarjeta.numeroTarjeta,
+                              bancoNombre: tarjeta.nombre,
+                              saldo: tarjeta.saldo,
+                              fechaVencimiento: tarjeta.fechaVencimiento,
+                              isCredito: tarjeta.esCredito,
+                              fechaCorte: tarjeta.esCredito
+                                  ? (tarjeta.fechaCorte ?? '')
+                                  : '',
+                              fechaLimitePago: tarjeta.esCredito
+                                  ? (tarjeta.fechaLimite ?? '')
+                                  : '',
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: tarjetas.map((tarjeta) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0,
                               ),
-                            )),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetalleTarjetasScreen(
+                                            tarjeta: tarjeta,
+                                          ),
+                                    ),
+                                  );
+                                  if (result == true) setState(() {});
+                                },
+                                child: TarjetasVisual(
+                                  tarjetaColor: Color(tarjeta.colorFondo),
+                                  numeroTarjeta: tarjeta.numeroTarjeta,
+                                  bancoNombre: tarjeta.nombre,
+                                  saldo: tarjeta.saldo,
+                                  fechaVencimiento: tarjeta.fechaVencimiento,
+                                  isCredito: tarjeta.esCredito,
+                                  fechaCorte: tarjeta.esCredito
+                                      ? (tarjeta.fechaCorte ?? '')
+                                      : '',
+                                  fechaLimitePago: tarjeta.esCredito
+                                      ? (tarjeta.fechaLimite ?? '')
+                                      : '',
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              const SizedBox(height: 20),
-
-              // CUENTAS
               const Text(
                 'Cuentas Disponibles',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -178,73 +179,81 @@ class _HomeCardsState extends State<HomeCards> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 150,
-                child: listaCuentas.isEmpty
-                    ? const Center(child: Text("No hay cuentas disponibles"))
-                    : (listaCuentas.length > 3
-                          ? PageView.builder(
-                              scrollDirection: Axis.horizontal,
-                              controller: PageController(viewportFraction: 0.8),
-                              itemCount: listaCuentas.length,
-                              itemBuilder: (context, index) {
-                                final cuenta = listaCuentas[index];
-                                return GestureDetector(
-                                  onTap: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetalleCuentaScreen(cuenta: cuenta),
-                                      ),
-                                    );
-                                    if (result == true) {
-                                      cargarCuentas();
-                                    }
-                                  },
-                                  child: Expanded(
-                                    child: Cuentas(
-                                      color: Color(cuenta.color),
-                                      nombre: cuenta.nombre,
-                                      tipo: cuenta.tipo,
-                                      saldo: cuenta.saldo,
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          : SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: listaCuentas
-                                    .map(
-                                      (cuenta) => GestureDetector(
-                                        onTap: () async {
-                                          final result = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetalleCuentaScreen(
-                                                    cuenta: cuenta,
-                                                  ),
-                                            ),
-                                          );
-                                          if (result == true) {
-                                            cargarCuentas();
-                                          }
-                                        },
-                                        child: Expanded(
-                                          child: Cuentas(
-                                            color: Color(cuenta.color),
-                                            nombre: cuenta.nombre,
-                                            tipo: cuenta.tipo,
-                                            saldo: cuenta.saldo,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                child: FutureBuilder<List<Cuenta>>(
+                  future: OperacionesBD.obtenerCuentas(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final cuentas = snapshot.data!;
+                    if (cuentas.isEmpty) {
+                      return const Center(
+                        child: Text('No hay cuentas disponibles'),
+                      );
+                    }
+                    if (cuentas.length > 3) {
+                      return PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        controller: PageController(viewportFraction: 0.8),
+                        itemCount: cuentas.length,
+                        itemBuilder: (context, index) {
+                          final cuenta = cuentas[index];
+                          return GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetalleCuentaScreen(cuenta: cuenta),
+                                ),
+                              );
+                              if (result == true) setState(() {});
+                            },
+                            child: Cuentas(
+                              color: Color(cuenta.color),
+                              nombre: cuenta.nombre,
+                              tipo: cuenta.tipo,
+                              saldo: cuenta.saldo,
+                              width: 250,
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: cuentas.map((cuenta) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0,
                               ),
-                            )),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetalleCuentaScreen(cuenta: cuenta),
+                                    ),
+                                  );
+                                  if (result == true) setState(() {});
+                                },
+                                child: Cuentas(
+                                  color: Color(cuenta.color),
+                                  nombre: cuenta.nombre,
+                                  tipo: cuenta.tipo,
+                                  saldo: cuenta.saldo,
+                                  width: 250,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),

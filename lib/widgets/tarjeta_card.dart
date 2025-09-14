@@ -31,7 +31,6 @@ class TarjetasVisual extends StatelessWidget {
     return Container(
       width: 250,
       height: 150,
-      margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -42,7 +41,7 @@ class TarjetasVisual extends StatelessWidget {
         children: [
           Row(
             children: [
-              CardUtils.getCardLogo(numeroTarjeta),
+              CardUtils.getCardLogoRow(numeroTarjeta),
               const SizedBox(width: 8),
               Text(
                 bancoNombre,

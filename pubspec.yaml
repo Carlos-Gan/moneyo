@@ -29,8 +29,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/logos/amex.png
     - assets/logos/discover.png
     - assets/logos/mastercard.png
     - assets/logos/visa.png
     - assets/logos/carnet.png
+    - assets/logos/amex.png

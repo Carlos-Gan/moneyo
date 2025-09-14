@@ -6,20 +6,21 @@ class Cuentas extends StatelessWidget {
   final String tipo;
   final double saldo;
   final Color color;
+  final double width;
   const Cuentas({
     super.key,
     required this.nombre,
     required this.tipo,
     required this.saldo,
     required this.color,
+    required this.width,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
+      width: width,
       height: 100,
-      margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),

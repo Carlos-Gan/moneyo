@@ -1,77 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class CardUtils {
-  static Widget getCardLogo(String cardNumber) {
-    if (cardNumber.isEmpty) return const SizedBox();
-
-    final cleanNumber = cardNumber.replaceAll(' ', '');
-
-    if (cleanNumber.startsWith('4')) {
-      return Image.asset('assets/logos/visa.png', height: 10);
-    } else if (cleanNumber.startsWith('506')) {
-      return Image.asset('assets/logos/carnet.png', height: 24);
-    } else if (cleanNumber.startsWith('3')) {
-      return Image.asset('assets/logos/amex.png', height: 24);
-    } else if (cleanNumber.startsWith('5')) {
-      return Image.asset('assets/logos/mastercard.png', height: 24);
-    } else if (cleanNumber.startsWith('6')) {
-      return Image.asset('assets/logos/discover.png', height: 24);
-    }
-
-    // default genérico si no coincide
-    return const Icon(Icons.credit_card, size: 24, color: Colors.white);
-  }
-
-  static Widget getCardLogoWithType(String cardNumber) {
-    if (cardNumber.isEmpty) return const SizedBox();
-
-    final cleanNumber = cardNumber.replaceAll(' ', '');
-    String type = getCardType(cleanNumber);
-
-    switch (type) {
-      case 'Visa':
-        return Row(
-          children: [
-            Image.asset('assets/logos/visa.png', height: 10),
-            const SizedBox(width: 5),
-          ],
-        );
-      case 'MasterCard':
-        return Row(
-          children: [
-            Image.asset('assets/logos/mastercard.png', height: 20),
-            const SizedBox(width: 5),
-          ],
-        );
-      case 'Amex':
-        return Row(
-          children: [
-            Image.asset('assets/logos/amex.png', height: 20),
-            const SizedBox(width: 5),
-          ],
-        );
-      case 'Carnet':
-        return Row(
-          children: [
-            Image.asset('assets/logos/carnet.png', height: 20),
-            const SizedBox(width: 5),
-          ],
-        );
-      default:
-        return Row(children: [
-          ],
-        );
-    }
-  }
+  static final Map<String, String> logos = {
+    'Visa': "assets/logos/visa.png",
+    'MasterCard': "assets/logos/mastercard.png",
+    'Amex': "assets/logos/amex.png",
+    'Carnet': "assets/logos/carnet.png",
+    'Discover': "assets/logos/discover.png",
+  };
 
   static String getCardType(String cardNumber) {
     if (cardNumber.startsWith('4')) return 'Visa';
     if (cardNumber.startsWith('5')) return 'MasterCard';
-    if (cardNumber.startsWith('3')) return 'Amex';
+    if (cardNumber.startsWith('3')) return "Amex";
     if (cardNumber.startsWith('506')) return 'Carnet';
+    if (cardNumber.startsWith('6')) return 'Discover';
     return 'Desconocida';
+  }
+
+  static Widget getCardLogoRow(String cardNumber) {
+    final cleanNumber = cardNumber.replaceAll(" ", "");
+    final tipo = getCardType(cleanNumber);
+
+    // 🔹 Si no hay número -> mostrar todos los logos en gris
+    if (cleanNumber.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: logos.entries
+            .map(
+              (entry) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Image.asset(
+                  entry.value,
+                  height: 30,
+                ),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    // 🔹 Si hay número -> mostrar solo el logo correspondiente
+    if (logos.containsKey(tipo)) {
+      return Image.asset(logos[tipo]!, height: 30);
+    }
+
+    // 🔹 Si no coincide -> ícono genérico
+    return const FaIcon(FontAwesomeIcons.creditCard, size: 30);
   }
 }
 
