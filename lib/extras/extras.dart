@@ -21,7 +21,7 @@ class CardUtils {
     return 'Desconocida';
   }
 
-  static Widget getCardLogoRow(String cardNumber) {
+  static Widget getCardLogoRow(String cardNumber, double sizeLogo) {
     final cleanNumber = cardNumber.replaceAll(" ", "");
     final tipo = getCardType(cleanNumber);
 
@@ -33,10 +33,7 @@ class CardUtils {
             .map(
               (entry) => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Image.asset(
-                  entry.value,
-                  height: 30,
-                ),
+                child: Image.asset(entry.value, height: sizeLogo),
               ),
             )
             .toList(),
@@ -45,11 +42,44 @@ class CardUtils {
 
     // 🔹 Si hay número -> mostrar solo el logo correspondiente
     if (logos.containsKey(tipo)) {
-      return Image.asset(logos[tipo]!, height: 30);
+      return Image.asset(logos[tipo]!, height: sizeLogo);
     }
 
     // 🔹 Si no coincide -> ícono genérico
     return const FaIcon(FontAwesomeIcons.creditCard, size: 30);
+  }
+
+  //Formato de la fecha de vencimiento
+  static String formatFechaVencimiento(String fecha) {
+    try {
+      final partes = fecha.split('/');
+      if (partes.length != 2) return fecha;
+
+      final mesNum = int.tryParse(partes[0]);
+      final ano = '20${partes[1]}';
+
+      if (mesNum == null || mesNum < 1 || mesNum > 12) return fecha;
+
+      const nombresMeses = [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+      ];
+      final nombreMes = nombresMeses[mesNum - 1];
+
+      return '$nombreMes del $ano';
+    } catch (e) {
+      return fecha;
+    }
   }
 }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:moneyo/bd/operaciones_bd.dart';
 import 'package:moneyo/bd/tarjetas.dart';
+import 'package:moneyo/extras/app_colors.dart';
+import 'package:moneyo/extras/extras.dart';
 import 'package:moneyo/panels/tarjetas/tarjeta_edit.dart';
 
 class DetalleTarjetasScreen extends StatefulWidget {
@@ -61,12 +63,128 @@ class _DetalleTarjetasScreenState extends State<DetalleTarjetasScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          "Banco: ${tarjeta.nombre}\n"
-          "Número: ${tarjeta.numeroTarjeta}\n"
-          "Saldo: ${tarjeta.saldo}",
-          style: const TextStyle(fontSize: 18),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            //Nombre de la tarjeta
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Nombre de la tarjeta',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(tarjeta.nombre, style: TextStyle(fontSize: 20)),
+              ],
+            ),
+            SizedBox(height: 10),
+            //Numero de tarjeta
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Numero de tarjeta label
+                const Text(
+                  'Numero de la tarjeta',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                //Numero de tarjeta dinamico
+                Row(
+                  children: [
+                    CardUtils.getCardLogoRow(tarjeta.numeroTarjeta, 45),
+                    const SizedBox(width: 10),
+                    Text(tarjeta.numeroTarjeta, style: TextStyle(fontSize: 20)),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            //Fecha de vencimiento
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Fecha de Vencimiento',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  CardUtils.formatFechaVencimiento(tarjeta.fechaVencimiento),
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            //Si es credito
+            if (tarjeta.esCredito) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //Fecha de Corte
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Fecha de Corte',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.lightText,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(tarjeta.fechaCorte!, style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                  //Fecha de Limite
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Fecha Limite',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.lightText,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        tarjeta.fechaLimite!,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+            SizedBox(height: 20),
+            const Text(
+              'Ultimas transacciones',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            //Ultimas transacciones
+            
+          ],
         ),
       ),
     );

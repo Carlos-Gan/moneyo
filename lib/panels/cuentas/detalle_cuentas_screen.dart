@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:moneyo/bd/cuentas.dart';
 import 'package:moneyo/bd/operaciones_bd.dart';
+import 'package:moneyo/extras/app_colors.dart';
 import 'package:moneyo/panels/cuentas/cuenta_edit.dart';
 
 class DetalleCuentaScreen extends StatefulWidget {
@@ -61,12 +62,78 @@ class _DetalleCuentaScreen extends State<DetalleCuentaScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          "Nombre: ${cuenta.nombre}\n"
-          "Tipo: ${cuenta.tipo}\n"
-          "Saldo: ${cuenta.saldo}",
-          style: const TextStyle(fontSize: 18),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            //Nombre de la tarjeta
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Nombre de la cuenta',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(cuenta.nombre, style: TextStyle(fontSize: 20)),
+              ],
+            ),
+            SizedBox(height: 10),
+            //Numero de tarjeta
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Numero de tarjeta label
+                const Text(
+                  'Tipo de cuenta',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                //Numero de tarjeta dinamico
+                Text(
+                  cuenta.tipo,
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            //Fecha de vencimiento
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Saldo',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  cuenta.saldo.toString(),
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            const Text(
+              'Ultimas transacciones',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+      
+            //Ultimas transacciones
+          ],
         ),
       ),
     );
@@ -97,9 +164,7 @@ class _DetalleCuentaScreen extends State<DetalleCuentaScreen> {
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
         title: Text('Confirmar eliminacion'),
-        content: Text(
-          "¿Seguro que deseas borrar la cuenta ${cuenta.nombre}?",
-        ),
+        content: Text("¿Seguro que deseas borrar la cuenta ${cuenta.nombre}?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),

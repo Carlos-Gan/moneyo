@@ -41,7 +41,7 @@ class TarjetasVisual extends StatelessWidget {
         children: [
           Row(
             children: [
-              CardUtils.getCardLogoRow(numeroTarjeta),
+              CardUtils.getCardLogoRow(numeroTarjeta,30),
               const SizedBox(width: 8),
               Text(
                 bancoNombre,

@@ -119,6 +119,7 @@ class _AddAccountsState extends State<AddAccounts> {
                                     padding: EdgeInsetsGeometry.only(bottom: 8),
                                     child: CardUtils.getCardLogoRow(
                                       cardNumberController.text,
+                                      30
                                     ),
                                   );
                                 },

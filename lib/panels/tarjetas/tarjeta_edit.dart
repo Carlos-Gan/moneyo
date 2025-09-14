@@ -147,6 +147,7 @@ class _EditCardsState extends State<EditCards> {
                       padding: EdgeInsetsGeometry.only(bottom: 8),
                       child: CardUtils.getCardLogoRow(
                         cardNumberController.text,
+                        30
                       ),
                     );
                   },
